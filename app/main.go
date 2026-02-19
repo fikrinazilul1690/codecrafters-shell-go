@@ -5,11 +5,15 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"reflect"
 	"strings"
 )
 
 func parseInput(input string) (string, []string) {
 	parts := strings.Fields(input)
+	if len(parts) == 0 {
+		return "", parts
+	}
 	command, args := parts[0], parts[1:]
 	return command, args
 }
@@ -53,6 +57,9 @@ func main() {
 		if commandFunc, ok := commands[command]; ok {
 			commandFunc(args)
 		} else {
+			if reflect.ValueOf(command).IsZero() {
+				continue
+			}
 			if err := lookUpCommand(command, func(path string) {
 				cmd := exec.Command(command, args...)
 				cmd.Stdout = os.Stdout
