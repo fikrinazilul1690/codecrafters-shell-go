@@ -35,6 +35,16 @@ func main() {
 			pwd, _ := os.Getwd()
 			fmt.Println(pwd)
 		},
+		"cd": func(args []string) {
+			command := ""
+			if len(args) > 0 {
+				command = args[0]
+			}
+			err := os.Chdir(command)
+			if err != nil {
+				fmt.Printf("cd: %s: No such file or directory\n", command)
+			}
+		},
 	}
 	commands["type"] = func(args []string) {
 		command := args[0]
