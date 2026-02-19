@@ -14,6 +14,15 @@ func parseInput(input string) (string, []string) {
 	return command, args
 }
 
+func lookUpCommand(command string, fn func(path string)) {
+	path, err := exec.LookPath(command)
+	if err != nil {
+		fmt.Println(command + ": not found")
+		return
+	}
+	fn(path)
+}
+
 func main() {
 	commands := map[string]func([]string){
 		"exit": func(args []string) { os.Exit(0) },
@@ -25,12 +34,9 @@ func main() {
 			fmt.Println(command, "is a shell builtin")
 			return
 		}
-		path, err := exec.LookPath(command)
-		if err != nil {
-			fmt.Println(command + ": not found")
-			return
-		}
-		fmt.Println(command, "is", path)
+		lookUpCommand(command, func(path string) {
+			fmt.Println(command, "is", path)
+		})
 	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
@@ -45,7 +51,12 @@ func main() {
 		if commandFunc, ok := commands[command]; ok {
 			commandFunc(args)
 		} else {
-			fmt.Println(command + ": command not found")
+			lookUpCommand(command, func(path string) {
+				cmd := exec.Command(path, args...)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				cmd.Run()
+			})
 		}
 	}
 }
