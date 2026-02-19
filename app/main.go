@@ -18,6 +18,13 @@ func main() {
 		"exit": func(args []string) { os.Exit(0) },
 		"echo": func(args []string) { fmt.Println(strings.Join(args, " ")) },
 	}
+	commands["type"] = func(args []string) {
+		if _, ok := commands[args[0]]; ok {
+			fmt.Println(args[0], "is a shell builtin")
+			return
+		}
+		fmt.Println(args[0] + ": not found")
+	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("$ ")
