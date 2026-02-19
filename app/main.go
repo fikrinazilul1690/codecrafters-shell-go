@@ -7,24 +7,31 @@ import (
 	"strings"
 )
 
+func parseInput(input string) (string, []string) {
+	parts := strings.Fields(input)
+	command, args := parts[0], parts[1:]
+	return command, args
+}
+
 func main() {
+	commands := map[string]func([]string){
+		"exit": func(args []string) { os.Exit(0) },
+		"echo": func(args []string) { fmt.Println(strings.Join(args, " ")) },
+	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("$ ")
-		command, err := reader.ReadString('\n')
-		sliceOfCommands := strings.Split(strings.TrimSpace(command), " ")
-		command = sliceOfCommands[0]
+		input, err := reader.ReadString('\n')
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Error reading input:", err)
 			os.Exit(1)
 		}
-		if command == "echo" {
-			fmt.Println(strings.Join(sliceOfCommands[1:], " "))
-			continue
+		input = strings.TrimSpace(input)
+		command, args := parseInput(input)
+		if commandFunc, ok := commands[command]; ok {
+			commandFunc(args)
+		} else {
+			fmt.Println(command + ": command not found")
 		}
-		if command == "exit" {
-			break
-		}
-		fmt.Printf("%v: command not found\n", command)
 	}
 }
