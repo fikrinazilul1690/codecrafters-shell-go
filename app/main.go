@@ -14,10 +14,10 @@ func parseInput(input string) (string, []string) {
 	return command, args
 }
 
-func lookUpCommand(command string, fn func(path string)) {
+func lookUpCommand(command string, fn func(path string), errCallback func()) {
 	path, err := exec.LookPath(command)
 	if err != nil {
-		fmt.Println(command + ": not found")
+		errCallback()
 		return
 	}
 	fn(path)
@@ -36,6 +36,8 @@ func main() {
 		}
 		lookUpCommand(command, func(path string) {
 			fmt.Println(command, "is", path)
+		}, func() {
+			fmt.Println(command + ": not found")
 		})
 	}
 	reader := bufio.NewReader(os.Stdin)
@@ -56,6 +58,8 @@ func main() {
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				cmd.Run()
+			}, func() {
+				fmt.Println(command + ": command not found")
 			})
 		}
 	}
