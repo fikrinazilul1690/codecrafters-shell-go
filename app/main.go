@@ -38,7 +38,10 @@ func main() {
 		"cd": func(args []string) {
 			command := ""
 			if len(args) > 0 {
-				command = args[0]
+				command = strings.TrimSpace(args[0])
+				if command == "~" {
+					command = os.Getenv("HOME")
+				}
 			}
 			err := os.Chdir(command)
 			if err != nil {
