@@ -52,7 +52,7 @@ func main() {
 			commandFunc(args)
 		} else {
 			lookUpCommand(command, func(path string) {
-				cmd := exec.Command(path, args...)
+				cmd := exec.Command(command, args...)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				cmd.Run()
