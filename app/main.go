@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -19,11 +20,17 @@ func main() {
 		"echo": func(args []string) { fmt.Println(strings.Join(args, " ")) },
 	}
 	commands["type"] = func(args []string) {
-		if _, ok := commands[args[0]]; ok {
-			fmt.Println(args[0], "is a shell builtin")
+		command := args[0]
+		if _, ok := commands[command]; ok {
+			fmt.Println(command, "is a shell builtin")
 			return
 		}
-		fmt.Println(args[0] + ": not found")
+		path, err := exec.LookPath(command)
+		if err != nil {
+			fmt.Println(err)
+			fmt.Println(command + ": not found")
+		}
+		fmt.Println(command, "is", path)
 	}
 	reader := bufio.NewReader(os.Stdin)
 	for {
