@@ -31,6 +31,10 @@ func main() {
 	commands := map[string]func([]string){
 		"exit": func(args []string) { os.Exit(0) },
 		"echo": func(args []string) { fmt.Println(strings.Join(args, " ")) },
+		"pwd": func(_ []string) {
+			pwd, _ := os.Getwd()
+			fmt.Println(pwd)
+		},
 	}
 	commands["type"] = func(args []string) {
 		command := args[0]
