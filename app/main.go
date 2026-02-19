@@ -7,7 +7,14 @@ import (
 )
 
 func main() {
-	fmt.Print("$ ")
-	command, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-	fmt.Printf("%v: command not found\n", command[:len(command)-1])
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Print("$ ")
+		command, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error reading input:", err)
+			os.Exit(1)
+		}
+		fmt.Printf("%v: command not found\n", command[:len(command)-1])
+	}
 }
